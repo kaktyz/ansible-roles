@@ -1,0 +1,25 @@
+---
+- name: Create New User
+  hosts: home
+  become: true
+  gather_facts: false
+  vars:
+# Define your username and password here that you want to create on target hosts.
+    username: test
+    super_group: wheel
+    userpass: user_password
+  tasks:
+    - name: Create User
+      ansible.builtin.user:
+        name: "{{ username }}"
+        state: present
+        shell: /bin/bash
+        update_password: on_create
+        groups: "{{ super_group }}"
+        append: yes
+
+    - name: Set authorized key took from file
+      authorized_key:
+        user: "{{ username }}"
+        state: present
+        key: "{{ lookup('file', '/pwd/id_rsa.pub') }}"
